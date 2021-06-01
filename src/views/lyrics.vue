@@ -195,6 +195,7 @@ import { getLyric } from '@/api/track';
 import { lyricParser } from '@/utils/lyrics';
 import { disableScrolling, enableScrolling } from '@/utils/ui';
 import ButtonIcon from '@/components/ButtonIcon.vue';
+import axios from 'axios';
 
 export default {
   name: 'Lyrics',
@@ -295,12 +296,20 @@ export default {
     ...mapActions(['likeATrack']),
     getLyric() {
       if (!this.currentTrack.id) return;
-      return getLyric(this.currentTrack.id).then(data => {
+      return getLyric(this.currentTrack.id).then(async data => {
         if (!data?.lrc?.lyric) {
           this.lyric = [];
           this.tlyric = [];
           return false;
         } else {
+          if (data?.tlyric?.lyric) {
+            data.tlyric.lyric = await axios
+              .post('https://api.zhconvert.org/convert', {
+                text: data.tlyric.lyric,
+                converter: 'Taiwan',
+              })
+              .then(resp => resp.data.data.text);
+          }
           let { lyric, tlyric } = lyricParser(data);
           this.lyric = lyric;
           this.tlyric = tlyric;

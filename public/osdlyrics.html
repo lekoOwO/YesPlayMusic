@@ -192,12 +192,27 @@
                         _lyric
                             .text()
                             .then(
-                                (text) => {
+                                async (text) => {
                                     result = JSON.parse(text);
                                     if (!result.lrc) {
                                         lyrics = null;
                                         update_line(_progress);
                                         return;
+                                    }
+                                    if (result.tlyric.lyric) {
+                                        result.tlyric.lyric = await fetch("https://api.zhconvert.org/convert", {
+                                            method: "POST",
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                text: result.tlyric.lyric,
+                                                converter: "Taiwan"
+                                            })
+                                        })
+                                        .then(res => res.json())
+                                        .then(resp => resp.data.text)
                                     }
                                     _lyrics = lyric_parser(result.lrc.lyric);
                                     _translation = lyric_parser(result.tlyric.lyric);
