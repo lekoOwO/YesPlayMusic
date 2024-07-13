@@ -197,6 +197,22 @@
       </div>
       <div class="item">
         <div class="left">
+          <div class="title">{{ $t('settings.enableZhConvert') }}</div>
+        </div>
+        <div class="right">
+          <div class="toggle">
+            <input
+              id="enable-zh-convert"
+              v-model="enableZhConvert"
+              type="checkbox"
+              name="enable-zh-convert"
+            />
+            <label for="enable-zh-convert"></label>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="left">
           <div class="title">{{ $t('settings.lyricsBackground.text') }}</div>
         </div>
         <div class="right">
@@ -976,6 +992,17 @@ export default {
       set(value) {
         this.$store.commit('updateSettings', {
           key: 'showLyricsTranslation',
+          value,
+        });
+      },
+    },
+    enableZhConvert: {
+      get() {
+        return this.settings.enableZhConvert;
+      },
+      set(value) {
+        this.$store.commit('updateSettings', {
+          key: 'enableZhConvert',
           value,
         });
       },
