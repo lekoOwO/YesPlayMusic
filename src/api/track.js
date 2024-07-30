@@ -7,6 +7,7 @@ import {
   cacheLyric,
   getLyricFromCache,
 } from '@/utils/db';
+import { taiwanese } from '@/utils/translation';
 
 /**
  * 获取音乐 url
@@ -81,10 +82,18 @@ export function getLyric(id) {
       params: {
         id,
       },
-    }).then(result => {
-      cacheLyric(id, result);
-      return result;
-    });
+    })
+      .then(async result => {
+        const isTaiwanese = store.state.settings.enableZhConvert;
+        if (isTaiwanese && result?.tlyric?.lyric) {
+          result.tlyric.lyric = await taiwanese(result.tlyric.lyric);
+        }
+        return result;
+      })
+      .then(result => {
+        cacheLyric(id, result);
+        return result;
+      });
   };
 
   fetchLatest();
